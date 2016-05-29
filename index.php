@@ -2,6 +2,7 @@
 
 // include auto-loader
 require_once './vendor/autoload.php';
+require_once './Feeder.php';
 
 //Set up error handling
 $whoops = new \Whoops\Run;
