@@ -1,6 +1,11 @@
 {
     "require": {
         "debril/feed-io": "^2.2",
-        "twig/twig": "~1.0"
+        "twig/twig": "~1.0",
+        "filp/whoops": "^2.1",
+        "symfony/var-dumper": "^3.0"
+    },
+    "autoload": {
+        "files": ["Feeder.php"]
     }
 }

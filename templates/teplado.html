@@ -93,7 +93,7 @@
     
     <span>
       <b>
-      number of items : {{ numOfblocks }} | first item shown : {{ st }} | pages : {{pages}}
+      number of items : {{ numOfblocks }} | pages : {{pages}} | index of first item shown : {{ st }}
       </b>
     </span>
 
@@ -153,10 +153,10 @@
 
         <tr>
           <td>
-            {% if block.med == 'no' %}
+            {% if block.image == 'no' %}
               <img src="images/noim.jpg" width="200px"/>
             {% else %}
-              <img src="{{ block.med }}" width="200px"/>
+              <img src="{{ block.image }}" width="200px"/>
             {% endif %}
           </td>
 

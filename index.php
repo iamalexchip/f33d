@@ -1,156 +1,131 @@
 <?php
 
-## TWIG ##
-
-// include and register Twig auto-loader
+// include auto-loader
 require_once './vendor/autoload.php';
 
-// LOAD TEMPLATE ------ 
-// specify where to look for templates
-$loader = new Twig_Loader_Filesystem('templates');
- 
-// initialize Twig environment
-$twig = new Twig_Environment($loader);
+//Set up error handling
+$whoops = new \Whoops\Run;
+$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+$whoops->register();
 
-// load template
-$template = $twig->loadTemplate('teplado.html');
+/**
+ * Global Twig instance
+ *
+ * @var object
+ */
+global $twig;
 
-## END TWIG >>##
-	
-// set rss url variable
+setupTwig();
+
+//CHeck if the user POSTed a URL
 if (isset($_POST['url'])) {
 
-	$url = $_POST['url'];	
+	if (validURL($_POST['url'])) {
+		//If so, process the URL and show the feed items
+		processFeed($_POST['url']);
+	} else {
+		//ask user for valid url
+		
+		echo $twig->render('home.html', [
+			'url' => $_POST['url'],
+			'err' => 'invalid'
+		]);
+	}
 
 } else {
-
-	$url = NULL;
+	//Fetch URL fron the user
+	getURLFromUser();
 }
 
-try{
-
-	## FEED IO <<##
-
-	// create a simple FeedIo instance
-	$feedIo = \FeedIo\Factory::create()->getFeedIo();
-
-	// read a feed
-
-
-	// or read a feed since a certain date
-	$result = $feedIo->readSince($url, new \DateTime('-7 days'));
-	
-	// get title
-	$feedTitle = $result->getFeed()->getTitle();
-
-	$feedSite = $result->getFeed()->getLink();
-
-	// iterate through items
-	$blocks = array();
-	$blockNum = 1;
-
-	#store feed items in $blocks array 
-	foreach( $result->getFeed() as $item) {
-
-	    $blockTitle = $item->getTitle();
-	    $blockLink = $item->getLink();
-	    $blockDescrp = $item->getDescription();
-	    
-	    // check if item has media
-	    $medias = $item->hasMedia();
-
-	    if ($medias > 0) {
-
-	    	// when media is present	    
-		    $medias = $item->getMedias();		
-			foreach ( $medias as $media ) {
-				$med = $media->getUrl();
-			}
-
-		} else {
-			// when there is no media
-			$med = 'no';
-		}
-
-		// putting item(n) values in array $block(n) inside $blocks
-	    ${"block".$blockNum} = array('title' => $blockTitle,
-	    							 'link' => $blockLink,
-	    							 'descrp' => $blockDescrp,
-	    							 'med' => $med,
-	    							 );
-
-	    array_push($blocks, ${"block".$blockNum});
-	    $blockNum = $blockNum + 1;
-
-	}
-	
-	// count number items
-	$numOfblocks = count($blocks);
-	// pages have 20 items
-	$pages = $numOfblocks / 20; //number of pages
-
-
-	#check if number of pages is a floating number
-	if (is_float($pages)){
-
-		//if not then add one page for remainder items
-		$pages = (int)$pages + 1;
-
-	}
-
-	## END FEED ##
-
-}catch (Exception $e){
-		//die("Error: ".$e);
+function validURL($url)
+{
+	$vali = filter_var($url, FILTER_VALIDATE_URL);
+	return $vali;
 }
 
-	## RENDERING TEMPLATE ##
+/**
+* Initializes twig and returns reference
+*  
+* @return void
+*/
+function setupTwig()
+{
+	global $twig;
 
-	// when feed has items
-	if (isset($feedTitle)) {
-
-		$ok = 'yes';
-		$st = $_POST['st'];
-
-		echo $twig->render('teplado.html', [
-			'feedTitle' => $feedTitle,
-			'feedSite' => $feedSite,
-			'blocks' => $blocks,
-			'url' => $url,
-			'ok' => $ok,
-			'st' => $st,
-			'numOfblocks' => $numOfblocks,
-			'pages' => $pages,
-		]);
+	$loader = new Twig_Loader_Filesystem('templates');
 	
+	// initialize Twig environment
+	$twig = new Twig_Environment($loader);
+}
+
+/**
+ * Shows URL form to the user
+ *
+ * @return void
+ */
+function getURLFromUser()
+{
+	global $twig;
+	echo $twig->render('home.html');
+}
+
+/**
+ * Given a fetched feed, this function displays the feed items
+ *
+ * @param \Feeder $feed Feeder instance
+ * @return void
+ */
+function showFeed($feed)
+{
+	global $twig;
+	$st = $_POST['st'];
+
+	//render template for news items
+	echo $twig->render('news.html',
+	[
+		'feedTitle' => $feed->feedTitle, // title of the feed
+		'feedSite' => $feed->feedSite, // site of feed origin
+		'blocks' => $feed->blocks, // array which holds feed items
+		'url' => $feed->url, // url of the rss feed
+		'st' => $st, // variable value is the position in the array where extraction will start
+		'numOfblocks' => $feed->numOfblocks, // number of feed items
+		'pages' => $feed->pages, // number of pages
+	]);
+}
+
+/**
+ * Given a URL, shows the news items
+ *
+ * @param string $url RSS Feed URL
+ * @return void
+ */
+function processFeed($url)
+{
+	global $twig;
+
+	$feed = new Feeder($url);
+
+	try {
+
+		$feed->readFeed(); // read rss feed
+
+	} catch (Exception $e){
+				
+		echo 'Error: <font color="red">'.$e.'</font>';
+
+	}
+
+	// the condition is true if there are items on the url entered
+	// this if reflected by the $blocks array being set 
+
+	if ($feed->hasContent()) {
+		showFeed($feed);
 	} else {
-		## when no items were received
-		
-		# when person has not entered url
-		if (is_null($url)){
-			
-			echo $twig->render('teplado.html');
-
-		} else {
-
-			# when person has submited 			
-			if ($url != ''){
-				// when no info  recived
-				$err ='noinfo';
-		
-			} else {
-				// when url is empty
-				$err ='nourl';
-			
-			}
-
-			echo $twig->render('teplado.html', ['url' => $url, 'err' => $err]);
-			
-		}
-
+		echo $twig->render('home.html', [
+			'url' => $url,
+			'err' => 'noinfo'
+		]);
 	}
-	//---- >>>	 
+}
 
 ?>
-<html>
-</html>
