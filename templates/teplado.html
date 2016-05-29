@@ -162,10 +162,10 @@
           <td>
 
             <h3><a href="{{ block.link }}">
-              {{ block.title }}
+              {{ block.title |e(html) }}
             </a></h3>
             <br>
-              {{ block.descrp }}
+              {{ block.descrp |e(html) }}
             <br>
 
           </td>
