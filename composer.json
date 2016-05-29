@@ -6,6 +6,6 @@
         "symfony/var-dumper": "^3.0"
     },
     "autoload": {
-        "files": ["Feeder.php"]
+        "files": ["./Feeder.php"]
     }
 }
