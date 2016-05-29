@@ -1,2 +1,2 @@
-web: ./
+web: index.php
 
