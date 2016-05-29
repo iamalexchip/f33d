@@ -17,7 +17,7 @@
       <center>
 {% if  ok != 'yes' %}
         
-        <h3> Feed Feeder Website (sucking of the name is intentional) </h3>
+        <h3> Feed Feeder Website</h3>
         
         <div class="urlbox">
         
@@ -162,10 +162,10 @@
           <td>
 
             <h3><a href="{{ block.link }}">
-              {{ block.title |e(html) }}
+              {{ block.title | raw }}
             </a></h3>
             <br>
-              {{ block.descrp |e(html) }}
+              {{ block.descrp | raw }}
             <br>
 
           </td>
