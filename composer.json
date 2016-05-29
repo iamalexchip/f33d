@@ -1,0 +1,6 @@
+{
+    "require": {
+        "debril/feed-io": "^2.2",
+        "twig/twig": "~1.0"
+    }
+}
