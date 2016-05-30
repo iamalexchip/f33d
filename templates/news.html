@@ -1,0 +1,188 @@
+{% include 'header.html' %}
+
+    <form method="POST" action="index.php">
+    
+    <center>
+
+      <input type="hidden" name="url" value="{{ url }}"/>
+      
+      <div class="title">
+
+        <table width="100%">
+          <tr>
+            
+            <td style="align: center" width="100px">
+
+              <a href="index.php">
+
+                  <img src="images/rss.jpg" width="50"/>
+                  <br>
+                  Feeder Home
+
+              </a>
+
+            </td>
+
+            <td style="text-align: center">      
+
+              <h1>{{ feedTitle }}</h1>
+              <a href="{{ feedSite }}"> 
+              GO TO FULLSITE
+              </a>
+            
+            </td>
+          </tr>
+        </table>
+
+      </div>
+
+      </center>
+    <br>
+    <span>
+      <b>
+      number of items : {{ numOfblocks }} | pages : {{pages}} | index of first item shown : {{ st }}
+      </b>
+    </span>
+
+      <hr width="69%" color="#4444cc">
+      
+    <div align="center" name="Links and Show">
+      {% if pages != 1 %}
+
+        {# show which page you are on #}
+
+        {% if st == 0 %}
+          {{ 1 }} of {{ pages }}
+        {% else %}
+          {{ (st / 20) + 1}} of {{ pages }}
+        {% endif %}
+        
+        <br>
+
+        {# next and previous buttons logics #}
+        {% if st != 0 %}
+      
+          <button type="submit" name="st" value="{{st - 20}}">Previous page</button>
+
+        {% endif %}
+        
+        &nbsp
+
+        {% if st < numOfblocks-20 %}
+        
+          <button type="submit" name="st" value="{{st + 20}}">Next page</button>
+        
+        {% endif %}
+
+        <br><br>
+        {# pages links logic #}
+
+        {% set pg = -20 %}
+
+        {% for a in 1..pages %}
+
+          {% set pg = pg + 20 %}
+          <button type="submit" name="st" value="{{pg}}"> {{a}} {# pg #} </button>
+          &nbsp
+
+        {% endfor %}
+        <br>&nbsp
+
+      {% endif %}
+    </div>
+
+    <div class="newsitems">
+
+      <table>
+
+        {# news items #}
+        {% for block in blocks[st:20] %}
+
+        <tr>
+          <td>
+            {% if block.image == 'no' %}
+              <img src="images/noim.jpg" width="200px"/>
+            {% else %}
+              <img src="{{ block.image }}" width="200px"/>
+            {% endif %}
+          </td>
+
+          <td>
+
+            <h3><a href="{{ block.link }}">
+              {{ block.title | raw }}
+            </a></h3>
+            <br>
+              {{ block.descrp | raw }}
+            <br>
+
+          </td>
+        </tr>
+
+        {% endfor %}
+
+      </table>
+    </div>
+      
+      <center>
+
+        <br>
+        <div align="center" name="Links and Show">
+      {% if pages != 1 %}
+
+        {# show which page you are on #}
+
+        {% if st == 0 %}
+          {{ 1 }} of {{ pages }}
+        {% else %}
+          {{ (st / 20) + 1}} of {{ pages }}
+        {% endif %}
+        
+        <br>
+
+        {# next and previous buttons logics #}
+        {% if st != 0 %}
+      
+          <button type="submit" name="st" value="{{st - 20}}">Previous page</button>
+
+        {% endif %}
+        
+        &nbsp
+
+        {% if st < numOfblocks-20 %}
+        
+          <button type="submit" name="st" value="{{st + 20}}">Next page</button>
+        
+        {% endif %}
+
+        <br><br>
+        {# pages links logic #}
+
+        {% set pg = -20 %}
+
+        {% for a in 1..pages %}
+
+          {% set pg = pg + 20 %}
+          <button type="submit" name="st" value="{{pg}}"> {{a}} {# pg #} </button>
+          &nbsp
+
+        {% endfor %}
+
+      {% endif %}
+    </div>
+        <hr width="69%" color="#4444cc">
+      <h3>
+        <a href="index.php"> 
+        FEEDER HOME
+        </a>
+        -
+        <a href="{{ feedSite }}"> 
+        GO TO FULLSITE
+        </a>
+      </h3>
+        
+    </center>
+    
+    </form>
+  </body>
+</html>

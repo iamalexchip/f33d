@@ -1,0 +1,52 @@
+{% include 'header.html' %}
+
+    <form method="POST" action="index.php">
+      <center>
+      
+        <h3> Feed Feeder Website</h3>
+        
+        <div class="urlbox">
+        
+          <br>Enter RSS feed url :
+          <input type="text" name="url" size="100" value="{{ url }}" />
+          <button type="reset"> Clear </button>
+          
+          <br><br>
+          
+          <button type="submit" name="st" value="0"> FEED </button>
+          <br>
+          <font color="#11ffcc">&nbsp</font>
+
+        </div>
+
+        <!-- ERROR MESSAGES -->
+
+        {% if err != '' %}
+          <div class="{{err}}">
+            <br>
+            {%if err == 'noinfo'%}
+                
+              No Information was aquired from the feed
+
+            {% endif %}
+
+            {% if  err == 'nourl' %}
+
+              Enter information in the url field
+
+            {% endif %}
+            
+            {% if  err == 'invalid' %}
+
+              Enter a valid url 
+            
+            {% endif %}
+          <br>&nbsp
+          </div>
+        {% endif %}
+
+    </center>
+
+    </form>
+  </body>
+</html>
